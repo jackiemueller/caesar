@@ -31,11 +31,12 @@ page_header = """
 form = """
 <form action="/" method="post">
     <div>
-        <label for="rot">Rotate by this amount:</label>
-        <input type="text" name="rot" value="0">
+        <label>Rotate by this amount:</label>
+        <input type="text" name="amount" value="0">
         <p class="error"></p>
     </div>
-    <textarea type="text" name="text"></textarea>
+    <textarea input type="text" name="text">%(text)s
+    </textarea>
     <br>
     <input type="submit" value="Encrypt it!"/>
 </form>
@@ -48,14 +49,17 @@ page_footer = """
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write(page_header + form + page_footer)
+        response = page_header + form + page_footer
+        self.response.write(response)
 
     def post(self):
-        answer = self.request.get("answer")
-        answer = encrypt()
-        print(answer)
-        self.response.write(page_header + form + page_footer)
+        rotate_amount = self.request.get("amount")
+        user_text = self.request.get("text")
+        if user_text:
+            result = encrypt(user_text, int(rotate_amount))
 
+        response = page_header + (form % {"text": result}) + page_footer
+        self.response.write(response)
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
