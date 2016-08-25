@@ -1,6 +1,7 @@
 
 import webapp2
 from caesar import encrypt
+import cgi
 
 page_header = """
 <!DOCTYPE html>
@@ -35,8 +36,7 @@ form = """
         <input type="text" name="amount" value="0">
         <p class="error"></p>
     </div>
-    <textarea input type="text" name="text">%(text)s
-    </textarea>
+    <textarea name="text">%(text)s</textarea>
     <br>
     <input type="submit" value="Encrypt it!"/>
 </form>
@@ -46,6 +46,8 @@ page_footer = """
 </body>
 </html>
 """
+def escape_html(s):
+    return cgi.escape(s, quote = True)
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -58,7 +60,7 @@ class MainHandler(webapp2.RequestHandler):
         if user_text:
             result = encrypt(user_text, int(rotate_amount))
 
-        response = page_header + (form % {"text": result}) + page_footer
+        response = page_header + (form %{"text": result}) + page_footer
         self.response.write(response)
 
 app = webapp2.WSGIApplication([
